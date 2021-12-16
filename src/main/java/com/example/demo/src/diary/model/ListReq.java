@@ -8,9 +8,8 @@ import java.util.*;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetDiaryById {
-    private GetDiaryDetail getDiaryDetail;
-    private ArrayList<String> imgUrls;
-    private ArrayList<Mood> moods;
+public class ListReq {
+    private int userIdx;
+    private String context;
+    private List<String> lists;
 }
-
