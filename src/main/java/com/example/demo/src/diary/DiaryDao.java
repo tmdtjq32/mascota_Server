@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.lang.Integer;
 import java.lang.Object;
 
 
@@ -52,7 +53,8 @@ public class DiaryDao {
                 "end as day, diaryImg.imgUrl from diary\n" +
                 "join diaryList on diaryList.idx = diary.listIdx\n" +
                 "join diaryImg on diaryImg.diaryIdx = diary.idx and diaryImg.status = 'N'\n" +
-                "where listIdx = ? and diary.status = 'N'\n" +
+                "join pet on pet.idx = mood.petIdx and pet.status = 'N'" +
+                "where listIdx = ? and diary.status = 'N' and diary.type = '1'\n" +
                 "group by diary.idx\n" +
                 "order by diary.date desc diary.idx;";
         return this.jdbcTemplate.query(Query,
@@ -70,11 +72,11 @@ public class DiaryDao {
 
     public GetDiaryById getDiaryDetail(int diaryIdx) {
         int idx = diaryIdx;
-        String Query = "select diary.idx, title, context, diary.type, diary.date, diaryImg.imgUrl, mood.petIdx, pet.name, mood.type as petType\n" +
+        String Query = "select diary.idx, diary.userIdx, title, context, diary.type, diary.date, diaryImg.imgUrl, mood.petIdx, pet.name, mood.type as petType\n" +
                 "from diary \n" +
                 "join diaryImg on diaryImg.diaryIdx = diary.idx and diaryImg.status = 'N'\n" +
                 "join mood on mood.diaryIdx = diary.idx and mood.status = 'N'\n" +
-                "join pet on mood.petIdx = pet.idx\n" +
+                "join pet on mood.petIdx = pet.idx and pet.status = 'N'\n" +
                 "where diary.idx = ? and diary.status = 'N' order by mood.petIdx";
 
         ArrayList<String> imgs = new ArrayList<String>();
@@ -84,7 +86,7 @@ public class DiaryDao {
                 new RowMapper<GetDiaryDetail>() {
                     @Override
                     public GetDiaryDetail mapRow (ResultSet rs,int rowNum) throws SQLException{
-                        GetDiaryDetail result = new GetDiaryDetail(rs.getInt("idx"),rs.getString("title"), rs.getString("context"), rs.getString("type"), rs.getString("date"));
+                        GetDiaryDetail result = new GetDiaryDetail(rs.getInt("idx"),rs.getInt("userIdx"),rs.getString("title"), rs.getString("context"), rs.getString("type"), rs.getString("date"));
                         String chk = rs.getString("imgUrl");
                         if (!imgs.contains(chk)){
                             imgs.add(chk);
@@ -113,12 +115,12 @@ public class DiaryDao {
                 (rs,rowNum) ->  new Lists(rs.getInt("idx"), rs.getString("context")),idx);
     }
 
-    public GetDiaryDetail postDiary(PostDiaryReq postDiaryReq){
+    public int postDiary(PostDiaryReq postDiaryReq){
         String createUserQuery = "insert into diary(userIdx, listIdx, title, context, type, date) values (?,?,?,?,?,?)";
         String lastInserIdQuery = "select last_insert_id()";
         String query = "insert into diaryImg(diaryIdx,imgUrl) values ";
         String Moodquery = "insert into mood(diaryIdx,petIdx,type) values ";
-        String chk = "select idx, title, context, type, date from diary where idx = ?";
+        String chk = "select idx, userIdx, title, context, type, date from diary where idx = ?";
         Object[] createUserParams = new Object[]{postDiaryReq.getUserIdx(), postDiaryReq.getListIdx(),
                 postDiaryReq.getTitle(), postDiaryReq.getContext(), postDiaryReq.getType(), postDiaryReq.getDate()};
         this.jdbcTemplate.update(createUserQuery, createUserParams);
@@ -137,14 +139,7 @@ public class DiaryDao {
         Moodquery = Moodquery.substring(0,len-1);
         this.jdbcTemplate.update(query);
         this.jdbcTemplate.update(Moodquery);
-        return this.jdbcTemplate.queryForObject(chk,
-                (rs,rowNum) -> new GetDiaryDetail(
-                        rs.getInt("idx"),
-                        rs.getString("title"),
-                        rs.getString("context"),
-                        rs.getString("type"),
-                        rs.getString("date")),
-                lastInsertId);
+        return Integer.parseInt(lastInsertId);
     }
 
     public int updateDiary(GetDiaryById getDiaryById){
@@ -218,10 +213,11 @@ public class DiaryDao {
     }
 
     public GetDiaryDetail chkDiary(int idx){
-        String query = "select idx, title, context, type, date from diary where idx = ? and status = 'N'";
+        String query = "select idx, userIdx, title, context, type, date from diary where idx = ? and status = 'N'";
         return this.jdbcTemplate.queryForObject(query,
                 (rs,rowNum) -> new GetDiaryDetail(
                         rs.getInt("idx"),
+                        rs.getInt("userIdx"),
                         rs.getString("title"),
                         rs.getString("context"),
                         rs.getString("type"),
@@ -290,10 +286,10 @@ public class DiaryDao {
 
     public List<Lists> getlists(int userIdx){
         int idx = userIdx;
-        String Query = "select idx, context, status from diaryList where userIdx = ? order by idx";
+        String Query = "select idx, userIdx, context, status from diaryList where userIdx = ? order by idx";
 
         return this.jdbcTemplate.query(Query,
-                (rs,rowNum) ->  new Lists(rs.getInt("idx"), rs.getString("context"),rs.getString("status")),idx);
+                (rs,rowNum) ->  new Lists(rs.getInt("idx"), rs.getInt("userIdx"), rs.getString("context"),rs.getString("status")),idx);
     }
 
     public int deleteLists(int idx){

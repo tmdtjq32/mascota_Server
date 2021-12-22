@@ -16,11 +16,17 @@ public class User {
     private int level;
     private String imgUrl;
     private String authorName;
-    private String prologTitle;
+    private String title;
 
     public User(int userIdx, String password){
         this.userIdx = userIdx;
         this.password = password;
+    }
+
+    public User(String nickname, String imgUrl, String title){
+        this.nickname = nickname;
+        this.imgUrl = imgUrl;
+        this.title = title;
     }
 
 }

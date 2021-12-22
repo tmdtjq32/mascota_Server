@@ -10,6 +10,7 @@ import java.util.*;
 @AllArgsConstructor
 public class GetDiaryDetail {
     private int idx;
+    private int userIdx;
     private String title;
     private String context;
     private String type;

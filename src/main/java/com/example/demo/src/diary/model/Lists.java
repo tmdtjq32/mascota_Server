@@ -9,6 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Lists {
     private int listIdx;
+    private int userIdx;
     private String context;
     private String status;
 
