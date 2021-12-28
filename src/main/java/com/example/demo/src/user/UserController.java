@@ -207,7 +207,7 @@ public class UserController {
 
     @ResponseBody
     @PatchMapping("/pet/del/{petIdx}")
-    public BaseResponse<String> updatePet(@PathVariable("petIdx") int petIdx){
+    public BaseResponse<String> deletePet(@PathVariable("petIdx") int petIdx){
         try {
             int userIdxByJwt = jwtService.getUserIdx();
 

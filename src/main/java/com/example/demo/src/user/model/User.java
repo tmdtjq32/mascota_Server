@@ -3,10 +3,13 @@ package com.example.demo.src.user.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @Getter
 @Setter
 @AllArgsConstructor
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
     private int userIdx;
     private String id;

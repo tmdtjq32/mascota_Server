@@ -116,7 +116,7 @@ public class UserDao {
     }
 
     public int deletePet(int petIdx){
-        String Query = "update pet set status = 'D' where idx = ?";
+        String Query = "update diary join mood on diary.idx = mood.diaryIdx join pet on pet.idx = mood.petIdx set pet.status = 'D', diary.status = 'D' where pet.idx = ?";
 
         return this.jdbcTemplate.update(Query,petIdx);
     }
