@@ -23,7 +23,6 @@ import static com.example.demo.config.BaseResponseStatus.*;
 @Transactional
 public class UserProvider {
 
-    private final UserDao userDao;
     private final JwtService jwtService;
 
     @Autowired
@@ -32,8 +31,7 @@ public class UserProvider {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public UserProvider(UserDao userDao, JwtService jwtService) {
-        this.userDao = userDao;
+    public UserProvider(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 
@@ -49,6 +47,32 @@ public class UserProvider {
             }
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public ResponseUserDto login(SaveUserDto user) throws BaseException{
+        Optional<User> chk = userRepository.findById(user.getId());
+        String chkPassword, password;
+        if (chk.isPresent()) {
+            chkPassword = chk.get().getPassword();
+        }
+        else{
+            throw new BaseException(NONE_USER_EXIST);
+        }
+        try {
+            password = new AES128(Secret.USER_INFO_PASSWORD_KEY).decrypt(chkPassword);
+        } catch (Exception ignored) {
+            throw new BaseException(PASSWORD_DECRYPTION_ERROR);
+        }
+
+        if(user.getPassword().equals(password)){
+            String jwt = jwtService.createJwt(chk.get().getIdx());
+            chk.get().setJwt(jwt);
+            ResponseUserDto result = new ResponseUserDto(chk.get());
+            return result;
+        }
+        else{
+            throw new BaseException(FAILED_TO_LOGIN);
         }
     }
 

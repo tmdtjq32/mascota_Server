@@ -45,7 +45,44 @@ public class UserController {
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
+    }
 
+    @ResponseBody
+    @PostMapping("")
+    public BaseResponse<ResponseUserDto> getUser(@RequestBody SaveUserDto saveUserDto) {
+        try{
+            if (saveUserDto.getId() == null){
+                return new BaseResponse<>(NONE_ID_EXIST);
+            }
+
+            if (saveUserDto.getPassword() == null){
+                return new BaseResponse<>(NONE_PASSWORD_EXIST);
+            }
+
+            ResponseUserDto result = userService.createUser(saveUserDto);
+            return new BaseResponse<>(result);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/login")
+    public BaseResponse<ResponseUserDto> login(@RequestBody SaveUserDto saveUserDto) {
+        try{
+            if (saveUserDto.getId() == null){
+                return new BaseResponse<>(NONE_ID_EXIST);
+            }
+
+            if (saveUserDto.getPassword() == null){
+                return new BaseResponse<>(NONE_PASSWORD_EXIST);
+            }
+
+            ResponseUserDto result = userProvider.login(saveUserDto);
+            return new BaseResponse<>(result);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 
 }

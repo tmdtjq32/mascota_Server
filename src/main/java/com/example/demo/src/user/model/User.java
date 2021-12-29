@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Builder;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import javax.persistence.*;
 import java.util.HashSet;
@@ -21,6 +22,8 @@ public class User {
     private Integer idx;
     @Column(length = 100, nullable = false, unique = true)
     private String id;
+    @Column(length = 255, nullable = false)
+    private String password;
     @Column(length = 255, nullable = true)
     private String nickname;
     private String status = "N";
@@ -30,13 +33,17 @@ public class User {
     @Column(length = 45, nullable = true)
     private String title;
     @Transient
-    private String password;
-    @Transient
     private String jwt;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Pet> pets = new HashSet<>();
+
+    @Builder
+    public User(String id, String password) {
+        this.id = id;
+        this.password = password;
+    }
 
     public void addPet(Pet pet){
         this.getPets().add(pet);
