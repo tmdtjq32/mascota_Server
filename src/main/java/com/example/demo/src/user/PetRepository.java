@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
-    @Query("SELECT u FROM user as u WHERE u.id = :id")
-    Optional<User> findById(@Param("id") String id);
-
+public interface PetRepository extends JpaRepository {
+    List findByUser_Id(@Param(value = "user_id") Integer user_id);
 }

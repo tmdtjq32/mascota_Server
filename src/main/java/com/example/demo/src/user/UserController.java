@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.lang.Integer;
 
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -35,12 +36,13 @@ public class UserController {
 
     @ResponseBody
     @GetMapping("/{userIdx}") 
-    public BaseResponse<User> getUser(@PathVariable("userIdx") Integer userIdx) {
+    public BaseResponse<UserDto> getUser(@PathVariable("userIdx") Integer userIdx) {
         try{
-            User result = userProvider.getUser(userIdx);
+            UserDto result = userProvider.getUser(userIdx);
             if (result == null){
                 return new BaseResponse<>(NONE_USER_EXIST);
             }
+
             return new BaseResponse<>(result);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -49,7 +51,7 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<ResponseUserDto> getUser(@RequestBody SaveUserDto saveUserDto) {
+    public BaseResponse<UserDto> getUser(@RequestBody SaveUserDto saveUserDto) {
         try{
             if (saveUserDto.getId() == null){
                 return new BaseResponse<>(NONE_ID_EXIST);
@@ -59,7 +61,7 @@ public class UserController {
                 return new BaseResponse<>(NONE_PASSWORD_EXIST);
             }
 
-            ResponseUserDto result = userService.createUser(saveUserDto);
+            UserDto result = userService.createUser(saveUserDto);
             return new BaseResponse<>(result);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -68,7 +70,7 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/login")
-    public BaseResponse<ResponseUserDto> login(@RequestBody SaveUserDto saveUserDto) {
+    public BaseResponse<UserDto> login(@RequestBody SaveUserDto saveUserDto) {
         try{
             if (saveUserDto.getId() == null){
                 return new BaseResponse<>(NONE_ID_EXIST);
@@ -78,8 +80,49 @@ public class UserController {
                 return new BaseResponse<>(NONE_PASSWORD_EXIST);
             }
 
-            ResponseUserDto result = userProvider.login(saveUserDto);
+            UserDto result = userProvider.login(saveUserDto);
             return new BaseResponse<>(result);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/book")
+    public BaseResponse<String> login(@RequestBody SaveBookDto saveBookDto) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            if(!userProvider.chkUser(userIdxByJwt)){
+                return new BaseResponse<>(NONE_USER_EXIST);
+            }
+
+            if (saveBookDto.getTitle() == null){
+                return new BaseResponse<>(NONE_TITLE_EXIST);
+            }
+
+            if (saveBookDto.getNickname() == null){
+                return new BaseResponse<>(NONE_NICKNAME_EXIST);
+            }
+            userService.createBook(saveBookDto, userIdxByJwt);
+            return new BaseResponse<>("");
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/pet")
+    public BaseResponse<List> getPetLists() {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            if(!userProvider.chkUser(userIdxByJwt)){
+                return new BaseResponse<>(NONE_USER_EXIST);
+            }
+
+            List resultList = userProvider.getPetbyId(userIdxByJwt);
+            return new BaseResponse<>(resultList);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }

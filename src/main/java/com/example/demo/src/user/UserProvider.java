@@ -1,6 +1,5 @@
 package com.example.demo.src.user;
 
-
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.user.model.*;
@@ -15,6 +14,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
 import static com.example.demo.config.BaseResponseStatus.*;
 
 
@@ -28,6 +29,9 @@ public class UserProvider {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    PetRepository petRepository;
+
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -35,12 +39,11 @@ public class UserProvider {
         this.jwtService = jwtService;
     }
 
-    public User getUser(Integer userIdx) throws BaseException {
+    public UserDto getUser(Integer userIdx) throws BaseException {
         try {
             Optional<User> result = userRepository.findById(userIdx);
             if (result.isPresent()) {
-                User user = result.get();
-                return user;
+                return new UserDto(result.get());
             }
             else {
                 return null;
@@ -50,7 +53,15 @@ public class UserProvider {
         }
     }
 
-    public ResponseUserDto login(SaveUserDto user) throws BaseException{
+    public boolean chkUser(Integer userIdx) throws BaseException {
+        try {
+            return userRepository.existsById(userIdx);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public UserDto login(SaveUserDto user) throws BaseException{
         Optional<User> chk = userRepository.findById(user.getId());
         String chkPassword, password;
         if (chk.isPresent()) {
@@ -68,7 +79,7 @@ public class UserProvider {
         if(user.getPassword().equals(password)){
             String jwt = jwtService.createJwt(chk.get().getIdx());
             chk.get().setJwt(jwt);
-            ResponseUserDto result = new ResponseUserDto(chk.get());
+            UserDto result = new UserDto(chk.get());
             return result;
         }
         else{
@@ -76,5 +87,13 @@ public class UserProvider {
         }
     }
 
+    public Set<PetDto> getPetbyId(Integer userIdx) throws BaseException{
+        try{
+
+            return userRepository.findByUserId(userIdx);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 }

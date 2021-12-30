@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.*;
 
 import javax.sql.DataSource;
 
+import java.util.List;
+import java.util.Optional;
 import static com.example.demo.config.BaseResponseStatus.*;
 
 // Service Create, Update, Delete 의 로직 처리
@@ -35,7 +37,7 @@ public class UserService {
         this.jwtService = jwtService;
     }
 
-    public ResponseUserDto createUser(SaveUserDto user) throws BaseException {
+    public UserDto createUser(SaveUserDto user) throws BaseException {
         try{
             String pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(user.getPassword());
             user.setPassword(pwd);
@@ -45,10 +47,24 @@ public class UserService {
 
         try{
             User saveUser = userRepository.save(user.toEntity());
-            ResponseUserDto result = new ResponseUserDto(saveUser);
+            UserDto result = new UserDto(saveUser);
             String jwt = jwtService.createJwt(saveUser.getIdx());
             result.setJwt(jwt);
             return result;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void createBook(SaveBookDto saveBookDto, Integer userIdx) throws BaseException {
+        try{
+            Optional<User> result = userRepository.findById(userIdx);
+            if (result.isPresent()) {
+                User user = result.get();
+                user.setBook(saveBookDto);
+                userRepository.save(user);
+            }
+
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
