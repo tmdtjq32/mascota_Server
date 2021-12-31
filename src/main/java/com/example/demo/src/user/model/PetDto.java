@@ -13,7 +13,6 @@ import java.util.Date;
 @Setter
 public class PetDto {
     private Integer idx;
-    private Integer user_id;
     private String imgurl;
     private String name;
     private String type;
@@ -25,5 +24,11 @@ public class PetDto {
         this.name = entity.getName();
         this.type = entity.getType();
         this.birth = entity.getBirth();
+    }
+
+    public Pet toEntity(){
+        return Pet.builder()
+                .petDto(this)
+                .build();
     }
 }

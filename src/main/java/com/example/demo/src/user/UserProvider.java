@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,6 +33,9 @@ public class UserProvider {
     @Autowired
     PetRepository petRepository;
 
+    @Autowired
+    DiaryListRepository diaryListRepository;
+
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -41,7 +45,7 @@ public class UserProvider {
 
     public UserDto getUser(Integer userIdx) throws BaseException {
         try {
-            Optional<User> result = userRepository.findById(userIdx);
+            Optional<User> result = userRepository.findByIdx(userIdx);
             if (result.isPresent()) {
                 return new UserDto(result.get());
             }
@@ -87,11 +91,32 @@ public class UserProvider {
         }
     }
 
-    public Set<PetDto> getPetbyId(Integer userIdx) throws BaseException{
+    public List<PetDto> getPetbyId(Integer userIdx) throws BaseException{
         try{
+            List<PetDto> result = new ArrayList<>();
+            Optional<User> user = userRepository.findByIdx(userIdx);
+            if (user.isPresent()) {
+                user.get().getPets().forEach(p -> {
+                    result.add(new PetDto(p));
+                });
+            }
 
-            return userRepository.findByUserId(userIdx);
+            return result;
         } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<DiaryListDto> getDiaryList(Integer userIdx) throws BaseException {
+        try{
+            User user = new User(userIdx);
+            List<DiaryList> result = diaryListRepository.findByUser(user);
+            List<DiaryListDto> list = new ArrayList<>();
+            result.forEach(d -> {
+                list.add(new DiaryListDto(d));
+            });
+            return list;
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }

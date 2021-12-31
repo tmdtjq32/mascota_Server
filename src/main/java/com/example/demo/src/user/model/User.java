@@ -13,29 +13,36 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idx;
+
     @Column(length = 100, nullable = false, unique = true)
     private String id;
+
     @Column(length = 255, nullable = false)
     private String password;
+
     @Column(length = 255, nullable = true)
     private String nickname;
+
     private String status = "N";
+
     private Integer level = 1;
+
     @Column(length = 2000, nullable = true)
     private String imgurl;
+
     @Column(length = 45, nullable = true)
     private String title;
+
     @Transient
     private String jwt;
 
     @OneToMany(mappedBy="user")
-    Set<Pet> pets = new HashSet<>();
+    List<Pet> pets = new ArrayList<Pet>();
 
     @Builder
     public User(String id, String password) {
@@ -43,10 +50,20 @@ public class User {
         this.password = password;
     }
 
+    @Builder
+    public User(Integer idx) {
+        this.idx = idx;
+    }
+
     public void setBook(SaveBookDto save) {
         this.nickname = save.getNickname();
         this.imgurl = save.getImgurl();
         this.title = save.getTitle();
     }
-    
+
+    public void addPet(Pet pet){
+        this.pets.add(pet);
+        pet.setUser(this);
+    }
+
 }

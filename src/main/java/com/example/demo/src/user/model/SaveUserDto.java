@@ -12,6 +12,7 @@ import lombok.Builder;
 public class SaveUserDto{
     private String id;
     private String password;
+    private String updatepassword;
 
     @Builder
     public SaveUserDto(String id, String password){

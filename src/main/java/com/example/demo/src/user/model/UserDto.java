@@ -15,7 +15,6 @@ import java.util.HashSet;
 public class UserDto {
     private Integer idx;
     private String id;
-    private String password;
     private String nickname;
     private String imgurl;
     private String title;
@@ -27,7 +26,6 @@ public class UserDto {
     public UserDto(User entity){
         this.idx = entity.getIdx();
         this.id = entity.getId();
-        this.password = entity.getPassword();
         this.nickname = entity.getNickname();
         this.imgurl = entity.getImgurl();
         this.title = entity.getTitle();

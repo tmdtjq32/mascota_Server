@@ -15,9 +15,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@Entity(name = "pet")
-public class Pet {
+@Entity(name = "diarylist")
+public class DiaryList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idx;
@@ -27,26 +26,16 @@ public class Pet {
     private User user;
 
     @Column(length = 2000, nullable = false)
-    private String imgurl;
+    private String context;
 
-    @Column(length = 255, nullable = false)
-    private String name;
-
-    @Column(length = 1, nullable = false)
-    private String type;
-
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Temporal(TemporalType.DATE)
-    private Date birth;
+    @Column(nullable = true)
+    private Integer num;
 
     private String status = "N";
 
     @Builder
-    public Pet(User user, PetDto petDto) {
+    public DiaryList(User user, DiaryListDto diaryListDto) {
         this.user = user;
-        this.imgurl = petDto.getImgurl();
-        this.name = petDto.getName();
-        this.type = petDto.getType();
-        this.birth = petDto.getBirth();
+        this.context = diaryListDto.getContext();
     }
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
-public interface PetRepository extends JpaRepository<Pet, Integer> {
+public interface DiaryListRepository extends JpaRepository<DiaryList, Integer> {
+    List<DiaryList> findByUser(User user);
 
 }

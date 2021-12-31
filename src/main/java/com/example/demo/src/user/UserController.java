@@ -112,8 +112,37 @@ public class UserController {
     }
 
     @ResponseBody
+    @PatchMapping("")
+    public BaseResponse<String> modifyPassword(@RequestBody SaveUserDto user){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            if (user.getId() == null){
+                return new BaseResponse<>(NONE_ID_EXIST);
+            }
+
+            if (user.getPassword() == null){
+                return new BaseResponse<>(NONE_PASSWORD_EXIST);
+            }
+
+            if (user.getUpdatepassword() == null){
+                return new BaseResponse<>(NONE_PASSWORD_EXIST);
+            }
+
+            if (!userService.modifyPassword(user)){
+                return new BaseResponse<>(NONE_USER_EXIST);
+            }
+
+            String result = "";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
     @GetMapping("/pet")
-    public BaseResponse<List> getPetLists() {
+    public BaseResponse<List<PetDto>> getPetLists() {
         try{
             int userIdxByJwt = jwtService.getUserIdx();
 
@@ -121,8 +150,92 @@ public class UserController {
                 return new BaseResponse<>(NONE_USER_EXIST);
             }
 
-            List resultList = userProvider.getPetbyId(userIdxByJwt);
+            List<PetDto> resultList = userProvider.getPetbyId(userIdxByJwt);
             return new BaseResponse<>(resultList);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/pet")
+    public BaseResponse<List<PetDto>> getPetLists(@RequestBody PetDto pet) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            if(!userProvider.chkUser(userIdxByJwt)){
+                return new BaseResponse<>(NONE_USER_EXIST);
+            }
+
+            if (pet.getName() == null){
+                return new BaseResponse<>(NONE_NAME_EXIST);
+            }
+
+            if (pet.getImgurl() == null){
+                return new BaseResponse<>(NONE_IMG_EXIST);
+            }
+
+            if (pet.getType() == null){
+                return new BaseResponse<>(NONE_TYPE_EXIST);
+            }
+
+            if (pet.getBirth() == null){
+                return new BaseResponse<>(NONE_BIRTH_EXIST);
+            }
+
+            List<PetDto> result  = userService.createPet(pet,userIdxByJwt);
+            return new BaseResponse<>(result);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/pet/{petIdx}")
+    public BaseResponse<PetDto> modifyPetLists(@PathVariable("petIdx") int petIdx, @RequestBody PetDto pet) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            if(!userProvider.chkUser(userIdxByJwt)){
+                return new BaseResponse<>(NONE_USER_EXIST);
+            }
+
+            PetDto result = userService.updatePet(pet, petIdx);
+            return new BaseResponse<>(result);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @DeleteMapping("/pet/{petIdx}")
+    public BaseResponse<String> deletePet(@PathVariable("petIdx") int petIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            if(!userProvider.chkUser(userIdxByJwt)){
+                return new BaseResponse<>(NONE_USER_EXIST);
+            }
+
+            userService.deletePet(petIdx);
+            return new BaseResponse<>("");
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/lists")
+    public BaseResponse<List<DiaryListDto>> getDiaryLists() {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            if(!userProvider.chkUser(userIdxByJwt)){
+                return new BaseResponse<>(NONE_USER_EXIST);
+            }
+
+            List<DiaryListDto> result = userProvider.getDiaryList(userIdxByJwt);
+            return new BaseResponse<>(result);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
