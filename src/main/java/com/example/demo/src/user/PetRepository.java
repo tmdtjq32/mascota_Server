@@ -1,6 +1,6 @@
 package com.example.demo.src.user;
 
-import com.example.demo.src.user.model.*;
+import com.example.demo.src.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;

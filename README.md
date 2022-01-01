@@ -68,13 +68,13 @@ logs 폴더에 로그 기록을 어떤 형식으로 남길 것인지 설정한�
 
 `DemoApplication.java` 은 스프링 부트 프로젝트의 시작을 알리는 `@SpringBootApplication` 어노테이션을 사용하고 있다. 
 
-`src`폴더에는 실제 **API가 동작하는 프로세스**를 담았고 `config` 폴더에는 `src`에서 필요한 Secret key, Base 클래스, 상수 클래스를, `util` 폴더에는 JWT, 암호화, 정규표현식 등의 클래스가 존재하고 각 **도메인**별로 패키지를 구분했다.
+`src`폴더에는 실제 **API가 동작하는 프로세스**를 담았고 `config` 폴더에는 `src`에서 필요한 Secret key, Base 클래스, 상수 클래스를, `util` 폴더에는 JWT, 암호화, 정규표현식 등의 클래스가 존재한다.
 
 전반적인 API 통신 프로세스는 다음과 같다.
 
-> **Request** → `XXXController.java`(=Router+Controller) → `Service` (CUD) / `Provider` (R) (=Business Logic) → `Repository` (DB) → **Response**
+> **Request** → `Controller.java`(=Router+Controller) → `Service` (CUD) / `Provider` (R) (=Business Logic) → `Repository` (DB) → **Response**
 
-#### 1. Controller / `UserController.java`  / @RestController
+#### 1. Controller / @RestController
 
 > 1) API 통신의 **Routing** 처리
 > 2) Request를 다른 계층에 넘기고 처리된 결과 값을 Response 해주는 로직
@@ -88,7 +88,7 @@ UserController의 생성자에 `@Autowired` 어노테이션이 붙어있다. 이
 
 Response할 때, 공통 부분은 묶고 다른 부분은 제네릭을 통해 구현함으로써 반복되는 코드를 줄여준다. (`BaseResponse.java` 코드 살펴 볼 것. 여기에 쓰이는`BaseResponseStatus` 는 `enum`을 통해 Status 값을 관리하고 있다.)
 
-#### 2. Service 와 Provider / `UserService.java` `UserProvider.java` / @Service
+#### 2. Service 와 Provider / @Service
 
 > 1) **비즈니스 로직**을 다루는 곳 (DB 접근[CRUD], DB에서 받아온 것 형식화)
 >  + Request의 **의미적** **Validation** 처리 (DB를 거쳐야 검사할 수 있는)
@@ -106,7 +106,7 @@ Response할 때, 공통 부분은 묶고 다른 부분은 제네릭을 통해 �
 
 `BaseException`을 통해 `Service`나 `Provider`에서 `Controller`에 Exception을 던진다. 마찬가지로 Status 값은 `BaseResponseStatus` 의 `enum`을 통해 관리한다.
 
-#### 3. Repository / `UserRepository.java`
+#### 3. Repository 
 Spring Data JPA를 사용하여 구성되어 있다. 자세한 내용은 이곳 [공식 문서](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#reference) 참고했다.
 
 ### Spring Data JPA

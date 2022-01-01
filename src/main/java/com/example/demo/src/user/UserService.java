@@ -1,10 +1,8 @@
 package com.example.demo.src.user;
 
-
-
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
-import com.example.demo.src.user.model.*;
+import com.example.demo.src.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -36,9 +34,6 @@ public class UserService {
 
     @Autowired
     PetRepository petRepository;
-
-    @Autowired
-    DiaryListRepository diaryListRepository;
 
     @Autowired
     public UserService(UserProvider userProvider, JwtService jwtService) {
@@ -177,4 +172,5 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 }

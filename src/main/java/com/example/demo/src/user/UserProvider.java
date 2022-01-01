@@ -2,7 +2,7 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
-import com.example.demo.src.user.model.*;
+import com.example.demo.src.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -32,9 +32,6 @@ public class UserProvider {
 
     @Autowired
     PetRepository petRepository;
-
-    @Autowired
-    DiaryListRepository diaryListRepository;
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -106,19 +103,4 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
-    public List<DiaryListDto> getDiaryList(Integer userIdx) throws BaseException {
-        try{
-            User user = new User(userIdx);
-            List<DiaryList> result = diaryListRepository.findByUser(user);
-            List<DiaryListDto> list = new ArrayList<>();
-            result.forEach(d -> {
-                list.add(new DiaryListDto(d));
-            });
-            return list;
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
 }

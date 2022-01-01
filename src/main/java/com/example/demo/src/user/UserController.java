@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.user.model.*;
+import com.example.demo.src.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -223,22 +223,4 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-
-    @ResponseBody
-    @GetMapping("/lists")
-    public BaseResponse<List<DiaryListDto>> getDiaryLists() {
-        try{
-            int userIdxByJwt = jwtService.getUserIdx();
-
-            if(!userProvider.chkUser(userIdxByJwt)){
-                return new BaseResponse<>(NONE_USER_EXIST);
-            }
-
-            List<DiaryListDto> result = userProvider.getDiaryList(userIdxByJwt);
-            return new BaseResponse<>(result);
-        } catch(BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
 }
