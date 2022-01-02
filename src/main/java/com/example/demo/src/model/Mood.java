@@ -25,17 +25,16 @@ public class Mood {
     @JoinColumn(name = "diary_id")
     private Diary diary;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pet_id")
-    private Pet pet;
+    @Column
+    private String name;
 
     @Column(length = 20, nullable = false)
     private String type;
 
     @Builder
-    public Mood(Diary diary, Pet pet, String type) {
+    public Mood(Diary diary, String name, String type) {
         this.diary = diary;
-        this.pet = pet;
+        this.name = name;
         this.type = type;
     }
 }

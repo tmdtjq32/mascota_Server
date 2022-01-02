@@ -63,4 +63,35 @@ public class DiaryController {
         }
     }
 
+    @ResponseBody
+    @PatchMapping("/lists")
+    public BaseResponse<String> updateDiaryList(@RequestBody UpdateDiaryListsDto diaryListDto) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            for (String d : diaryListDto.getLists()){
+                if (d == null){
+                    return new BaseResponse<>(ADD_LISTS_TEXT_EMPTY);
+                }
+            }
+            diaryService.updateDiaryList(diaryListDto.getLists(), userIdxByJwt);
+            return new BaseResponse<>("");
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @DeleteMapping("/lists/{listIdx}")
+    public BaseResponse<String> deleteDiaryList(@PathVariable("listIdx") Integer listIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            diaryService.deleteDiaryList(listIdx, userIdxByJwt);
+            return new BaseResponse<>("");
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }

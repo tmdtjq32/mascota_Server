@@ -41,7 +41,7 @@ public class DiaryService {
     public void insertDiaryList(DiaryListDto diaryListDto, Integer userIdx) throws BaseException {
         try{
             User user = new User(userIdx);
-            List<DiaryList> result = diaryListRepository.findByUser(user);
+            List<DiaryList> result = diaryListRepository.findByUserOrderByNumAsc(user);
             for (DiaryList d : result){
                 if (d.getContext().equals(diaryListDto.getContext())){
                     throw new BaseException(FAIL_LISTS_ADD);
@@ -50,6 +50,39 @@ public class DiaryService {
             Integer number = result.size() + 1;
             DiaryList insert = new DiaryList(user, diaryListDto, number);
             diaryListRepository.save(insert);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void updateDiaryList(List<String> diaryListDto, Integer userIdx) throws BaseException {
+        try{
+            User user = new User(userIdx);
+            List<DiaryList> result = diaryListRepository.findByUserOrderByNumAsc(user);
+            System.out.println(result.size() +  " " + diaryListDto.size());
+            if (result.size() != diaryListDto.size()){
+                throw new BaseException(FAIL_LISTS_ADD);
+            }
+            for (int i = 0; i < result.size(); i++){
+                DiaryList update = result.get(i);
+                update.setContext(diaryListDto.get(i));
+                update.setNum(i+1);
+                diaryListRepository.save(update);
+            }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void deleteDiaryList(Integer listIdx, Integer userIdx) throws BaseException {
+        try{
+            Optional<DiaryList> result = diaryListRepository.findById(listIdx);
+            if (result.isPresent()) {
+                diaryListRepository.deleteById(listIdx);
+            }
+            else {
+                throw new BaseException(FAIL_LISTS_DEL);
+            }
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

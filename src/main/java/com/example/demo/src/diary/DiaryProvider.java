@@ -40,7 +40,7 @@ public class DiaryProvider {
     public List<DiaryListDto> getDiaryList(Integer userIdx) throws BaseException {
         try{
             User user = new User(userIdx);
-            List<DiaryList> result = diaryListRepository.findByUser(user);
+            List<DiaryList> result = diaryListRepository.findByUserOrderByNumAsc(user);
             List<DiaryListDto> list = new ArrayList<>();
             result.forEach(d -> {
                 list.add(new DiaryListDto(d));

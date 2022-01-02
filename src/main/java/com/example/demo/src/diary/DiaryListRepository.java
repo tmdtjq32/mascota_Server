@@ -12,6 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public interface DiaryListRepository extends JpaRepository<DiaryList, Integer> {
-    List<DiaryList> findByUser(User user);
+    List<DiaryList> findByUserOrderByNumAsc(User user);
 
 }

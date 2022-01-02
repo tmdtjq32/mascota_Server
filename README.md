@@ -20,18 +20,19 @@ api-server-spring-boot
     > src
       > test
         | TestController.java // logger를 어떻게 써야하는지 보여주는 테스트 클래스
-      > user
-        > models
+      > models
           | Pet.java        
           | User.java 
           | UserDto.java 
           | PetDto.java 
           | SaveUserDto.java 
           | SaveBookDto.java 
+      > user
         | UserController.java
         | UserProvider.java
         | UserService.java
         | UserRepository.java
+      > diary
       | WebSecurityConfig.java // spring-boot-starter-security, jwt 를 사용하기 위한 클래스 
     > utils
       | AES128.java // 암호화 관련 클래스
