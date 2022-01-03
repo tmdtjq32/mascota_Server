@@ -94,4 +94,16 @@ public class DiaryController {
         }
     }
 
+    @ResponseBody
+    @PostMapping("/{listIdx}")
+    public BaseResponse<String> insertDiary(@PathVariable("listIdx") Integer listIdx, @RequestBody DiaryDto diaryDto) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            diaryService.insertDiary(listIdx, diaryDto, userIdxByJwt);
+            return new BaseResponse<>("");
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }

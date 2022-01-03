@@ -16,9 +16,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "diarylist")
+@TableGenerator(
+        name = "DIARYLIST_SEQ_GENERATOR",
+        table = "DIARYLIST_SEQ",
+        pkColumnValue = "SEQNO",
+        allocationSize = 1)
 public class DiaryList {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE,generator = "DIARYLIST_SEQ_GENERATOR")
     private Integer idx;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,8 +35,6 @@ public class DiaryList {
 
     @Column(nullable = true)
     private Integer num;
-
-    private String status = "N";
 
     @Builder
     public DiaryList(User user, DiaryListDto diaryListDto, Integer num) {

@@ -41,7 +41,7 @@ public class UserService {
         this.jwtService = jwtService;
     }
 
-    public UserDto createUser(SaveUserDto user) throws BaseException {
+    public ResponseUser createUser(SaveUserDto user) throws BaseException {
         try{
             String pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(user.getPassword());
             user.setPassword(pwd);
@@ -51,7 +51,7 @@ public class UserService {
 
         try{
             User saveUser = userRepository.save(user.toEntity());
-            UserDto result = new UserDto(saveUser);
+            ResponseUser result = new ResponseUser(saveUser);
             String jwt = jwtService.createJwt(saveUser.getIdx());
             result.setJwt(jwt);
             return result;
@@ -84,7 +84,7 @@ public class UserService {
         }
 
         try{
-            Optional<User> result = userRepository.findById(saveUserDto.getId());
+            Optional<User> result = userRepository.selectById(saveUserDto.getId());
             if (result.isPresent()) {
                 User user = result.get();
                 if (!user.getPassword().equals(confirm)){
@@ -126,7 +126,9 @@ public class UserService {
                 });
                 return answer;
             }
-            throw new BaseException(DATABASE_ERROR);
+            else{
+                throw new BaseException(DATABASE_ERROR);
+            }
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

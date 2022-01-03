@@ -33,6 +33,15 @@ public class DiaryService {
     DiaryListRepository diaryListRepository;
 
     @Autowired
+    DiaryImgRepository diaryImgRepository;
+
+    @Autowired
+    DiaryRepository diaryRepository;
+
+    @Autowired
+    MoodRepository moodRepository;
+
+    @Autowired
     public DiaryService(DiaryProvider diaryProvider, JwtService jwtService) {
         this.diaryProvider = diaryProvider;
         this.jwtService = jwtService;
@@ -47,7 +56,10 @@ public class DiaryService {
                     throw new BaseException(FAIL_LISTS_ADD);
                 }
             }
-            Integer number = result.size() + 1;
+            Integer number = 1;
+            if (result.size() != 0){
+                number = result.get(result.size()-1).getNum() + 1;
+            }
             DiaryList insert = new DiaryList(user, diaryListDto, number);
             diaryListRepository.save(insert);
         } catch (Exception exception) {
@@ -59,16 +71,17 @@ public class DiaryService {
         try{
             User user = new User(userIdx);
             List<DiaryList> result = diaryListRepository.findByUserOrderByNumAsc(user);
-            System.out.println(result.size() +  " " + diaryListDto.size());
+
             if (result.size() != diaryListDto.size()){
                 throw new BaseException(FAIL_LISTS_ADD);
             }
-            for (int i = 0; i < result.size(); i++){
-                DiaryList update = result.get(i);
-                update.setContext(diaryListDto.get(i));
-                update.setNum(i+1);
-                diaryListRepository.save(update);
+            int cnt = 1;
+            for (DiaryList d : result){
+                d.setContext(diaryListDto.get(cnt-1));
+                d.setNum(cnt);
+                cnt++;
             }
+            diaryListRepository.saveAll(result);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -83,6 +96,34 @@ public class DiaryService {
             else {
                 throw new BaseException(FAIL_LISTS_DEL);
             }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void insertDiary(Integer listIdx, DiaryDto diaryDto, Integer userIdx) throws BaseException {
+        try{
+            User user = new User(userIdx);
+            Optional<DiaryList> result = diaryListRepository.findById(listIdx);
+            DiaryList nowList = new DiaryList();
+            if (result.isPresent()) {
+                nowList = result.get();
+            }
+            else {
+                throw new BaseException(FAIL_LISTS_DEL);
+            }
+            Diary insert = diaryRepository.save(new Diary(user,nowList,diaryDto));
+            List<DiaryImg> imgs = new ArrayList<>();
+            for (String d : diaryDto.getImgurls()){
+                imgs.add(new DiaryImg(insert, d));
+            }
+            diaryImgRepository.saveAll(imgs);
+            List<Mood> moods = new ArrayList<>();
+            for (MoodDto d : diaryDto.getMoods()){
+                moods.add(new Mood(insert, d));
+            }
+            moodRepository.saveAll(moods);
+
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

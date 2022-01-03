@@ -38,10 +38,14 @@ public class Diary {
     @Column(nullable = true)
     private Integer type;
 
+    @Temporal(TemporalType.DATE)
     private Date date;
 
-//    @OneToMany(mappedBy="diary")
+//    @OneToMany
 //    List<DiaryImg> imgs = new ArrayList<DiaryImg>();
+//
+//    @OneToMany
+//    List<Mood> moods = new ArrayList<Mood>();
 
     @Builder
     public Diary(User user, DiaryList diaryList, DiaryDto diaryDto) {

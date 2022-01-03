@@ -5,20 +5,17 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.Date;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @Getter
 @Setter
-public class MoodDto {
+public class ResponseUser {
     private Integer idx;
-    private String name;
-    private String type;
+    private String jwt;
 
-    public MoodDto(Mood entity){
+    public ResponseUser(User entity){
         this.idx = entity.getIdx();
-        this.name = entity.getName();
-        this.type = entity.getType();
+        this.jwt = entity.getJwt();
     }
 }
