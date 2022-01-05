@@ -12,9 +12,22 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @Getter
 @Setter
-public class DiaryImgDto {
+public class DiaryImgDto implements Comparable<DiaryImgDto>{
     private Integer idx;
     private String imgurl;
+    
+    @Override
+    public int compareTo(DiaryImgDto d){
+        if (this.idx > d.idx){
+            return 1;
+        }
+        else if (this.idx < d.idx){
+            return -1;
+        }
+        else{
+            return 0;
+        }
+    }
 
     public DiaryImgDto(DiaryImg entity){
         this.idx = entity.getIdx();

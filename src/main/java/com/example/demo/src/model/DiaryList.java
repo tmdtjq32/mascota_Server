@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.Builder;
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -16,14 +18,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "diarylist")
-@TableGenerator(
-        name = "DIARYLIST_SEQ_GENERATOR",
-        table = "DIARYLIST_SEQ",
-        pkColumnValue = "SEQNO",
-        allocationSize = 1)
 public class DiaryList {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE,generator = "DIARYLIST_SEQ_GENERATOR")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idx;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,10 +33,14 @@ public class DiaryList {
     @Column(nullable = true)
     private Integer num;
 
+    @Column(nullable = false)
+    private String type;
+    
     @Builder
     public DiaryList(User user, DiaryListDto diaryListDto, Integer num) {
         this.user = user;
         this.context = diaryListDto.getContext();
         this.num = num;
+        this.type = diaryListDto.getType();
     }
 }

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Optional;
 import static com.example.demo.config.BaseResponseStatus.*;
 
 
@@ -29,6 +30,15 @@ public class DiaryProvider {
 
     @Autowired
     DiaryListRepository diaryListRepository;
+
+    @Autowired
+    DiaryImgRepository diaryImgRepository;
+
+    @Autowired
+    DiaryRepository diaryRepository;
+
+    @Autowired
+    MoodRepository moodRepository;
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -46,6 +56,21 @@ public class DiaryProvider {
                 list.add(new DiaryListDto(d));
             });
             return list;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public ResponseDiaryDto getDiary(Integer diaryIdx) throws BaseException {
+        try{
+            Optional<Diary> result = diaryRepository.findById(diaryIdx);
+            
+            if (result.isPresent()){
+                return new ResponseDiaryDto(result.get());
+            }
+            else{
+                throw new BaseException(DATABASE_ERROR);
+            }
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

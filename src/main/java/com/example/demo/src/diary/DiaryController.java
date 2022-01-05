@@ -56,6 +56,11 @@ public class DiaryController {
             if (diaryListDto.getContext() == null){
                 return new BaseResponse<>(ADD_LISTS_TEXT_EMPTY);
             }
+
+            if (diaryListDto.getType() == null){
+                return new BaseResponse<>(NONE_TYPE_EXIST);
+            }
+
             diaryService.insertDiaryList(diaryListDto, userIdxByJwt);
             return new BaseResponse<>("");
         } catch(BaseException exception){
@@ -101,6 +106,30 @@ public class DiaryController {
             int userIdxByJwt = jwtService.getUserIdx();
             diaryService.insertDiary(listIdx, diaryDto, userIdxByJwt);
             return new BaseResponse<>("");
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/{diaryIdx}")
+    public BaseResponse<String> updateDiary(@PathVariable("diaryIdx") Integer diaryIdx, @RequestBody DiaryDto diaryDto) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            diaryService.updateDiary(diaryIdx, diaryDto, userIdxByJwt);
+            return new BaseResponse<>("");
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/{diaryIdx}")
+    public BaseResponse<ResponseDiaryDto> getDiary(@PathVariable("diaryIdx") Integer diaryIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            ResponseDiaryDto result = diaryProvider.getDiary(diaryIdx);
+            return new BaseResponse<>(result);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }

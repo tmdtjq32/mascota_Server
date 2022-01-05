@@ -217,7 +217,7 @@ public class UserController {
                 return new BaseResponse<>(NONE_USER_EXIST);
             }
 
-            userService.deletePet(petIdx);
+            userService.deletePet(petIdx,userIdxByJwt);
             return new BaseResponse<>("");
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));

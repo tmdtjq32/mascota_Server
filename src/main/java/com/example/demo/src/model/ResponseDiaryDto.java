@@ -9,32 +9,38 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @Getter
 @Setter
-public class DiaryDto {
+public class ResponseDiaryDto {
     private Integer idx;
     private String title;
     private String context;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
-    List<String> imgurls = new ArrayList<>();
+    List<DiaryImgDto> imgurls = new ArrayList<>();
 
     List<MoodDto> moods = new ArrayList<>();
 
-    public DiaryDto(Diary entity){
+    public ResponseDiaryDto(Diary entity){
         this.idx = entity.getIdx();
         this.title = entity.getTitle();
         this.context = entity.getContext();
         this.date = entity.getDate();
+        entity.getImgurls().forEach(i -> {
+           this.imgurls.add(new DiaryImgDto(i));
+        });
+        entity.getMoods().forEach(m -> {
+            this.moods.add(new MoodDto(m));
+        });
+        Collections.sort(this.imgurls);
+        Collections.sort(this.moods);
     }
 
-    public Diary toEntity(){
-        return Diary.builder()
-                .diaryDto(this)
-                .build();
-    }
 }

@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.model.*;
+import com.example.demo.src.diary.DiaryRepository;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -34,6 +35,9 @@ public class UserService {
 
     @Autowired
     PetRepository petRepository;
+
+    @Autowired
+    DiaryRepository diaryRepository;
 
     @Autowired
     public UserService(UserProvider userProvider, JwtService jwtService) {
@@ -160,11 +164,14 @@ public class UserService {
         }
     }
 
-    public void deletePet(Integer petIdx) throws BaseException {
+    public void deletePet(Integer petIdx, Integer userIdx) throws BaseException {
         try{
             Optional<Pet> result = petRepository.findById(petIdx);
             if (result.isPresent()) {
                 Pet now = result.get();
+                User user = new User(userIdx);
+                List<Diary> byPet = diaryRepository.findByNameAndUser(now.getName(),user);
+                diaryRepository.deleteAll(byPet);
                 petRepository.deleteById(petIdx);
             }
             else {

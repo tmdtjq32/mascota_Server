@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.*;
 
 import javax.sql.DataSource;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -91,6 +92,7 @@ public class DiaryService {
         try{
             Optional<DiaryList> result = diaryListRepository.findById(listIdx);
             if (result.isPresent()) {
+                diaryRepository.deleteByDiaryList(result.get());
                 diaryListRepository.deleteById(listIdx);
             }
             else {
@@ -123,7 +125,77 @@ public class DiaryService {
                 moods.add(new Mood(insert, d));
             }
             moodRepository.saveAll(moods);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
+    public void updateDiary(Integer diaryIdx, DiaryDto diaryDto, Integer userIdx) throws BaseException {
+        try{
+            Optional<Diary> chk = diaryRepository.findById(diaryIdx);
+            if (chk.isPresent()){
+                Diary result = chk.get();
+                diaryRepository.save(result);
+                Set<DiaryImg> imgs = result.getImgurls();
+                Set<Mood> moods = result.getMoods();
+                List<DiaryImgDto> imgurls = new ArrayList<>();
+                List<MoodDto> updateMoods = new ArrayList<>();
+                List<DiaryImg> delImgs = new ArrayList<>();
+                List<Mood> delMoods = new ArrayList<>();
+                for (DiaryImg i : imgs){
+                    imgurls.add(new DiaryImgDto(i));
+                }
+                for (Mood m : moods){
+                    updateMoods.add(new MoodDto(m));
+                }
+                Collections.sort(imgurls);
+                Collections.sort(updateMoods);
+                imgs.clear();
+                moods.clear();
+                result.setByDiaryDto(diaryDto); // 내용
+                if (imgurls.size() <= diaryDto.getImgurls().size()){
+                    for (int i = 0; i < imgurls.size(); i++){
+                        imgurls.get(i).setImgurl(diaryDto.getImgurls().get(i));
+                        imgs.add(new DiaryImg(result,imgurls.get(i)));
+                    }
+                    for (int i = imgurls.size(); i < diaryDto.getImgurls().size(); i++){
+                        imgs.add(new DiaryImg(result,diaryDto.getImgurls().get(i)));
+                    }
+                }
+                else{
+                    for (int i = 0; i < diaryDto.getImgurls().size(); i++){
+                        imgurls.get(i).setImgurl(diaryDto.getImgurls().get(i));
+                        imgs.add(new DiaryImg(result,imgurls.get(i)));
+                    }
+                    for (int i = diaryDto.getImgurls().size(); i < imgurls.size(); i++){
+                        delImgs.add(new DiaryImg(result,imgurls.get(i)));
+                    }
+                }
+                diaryImgRepository.saveAll(imgs);
+                diaryImgRepository.deleteAll(delImgs);
+                if (updateMoods.size() <= diaryDto.getMoods().size()){
+                    for (int i = 0; i < updateMoods.size(); i++){
+                        updateMoods.get(i).setName(diaryDto.getMoods().get(i).getName());
+                        updateMoods.get(i).setType(diaryDto.getMoods().get(i).getType());
+                        moods.add(new Mood(result,updateMoods.get(i)));
+                    }
+                    for (int i = updateMoods.size(); i < diaryDto.getMoods().size(); i++){
+                        moods.add(new Mood(result,diaryDto.getMoods().get(i)));
+                    }
+                }
+                else{
+                    for (int i = 0; i < diaryDto.getMoods().size(); i++){
+                        updateMoods.get(i).setName(diaryDto.getMoods().get(i).getName());
+                        updateMoods.get(i).setType(diaryDto.getMoods().get(i).getType());
+                        moods.add(new Mood(result,updateMoods.get(i)));
+                    }
+                    for (int i = diaryDto.getMoods().size(); i < updateMoods.size(); i++){
+                        delMoods.add(new Mood(result,updateMoods.get(i)));
+                    }
+                }
+                moodRepository.saveAll(moods);
+                moodRepository.deleteAll(delMoods);
+            }
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

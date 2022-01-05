@@ -34,7 +34,9 @@ public class Mood {
     @Builder
     public Mood(Diary diary, MoodDto moodDto) {
         this.diary = diary;
+        this.idx = moodDto.getIdx();
         this.name = moodDto.getName();
         this.type = moodDto.getType();
     }
+    
 }

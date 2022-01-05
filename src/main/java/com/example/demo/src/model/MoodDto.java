@@ -11,10 +11,23 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MoodDto {
+public class MoodDto implements Comparable<MoodDto>{
     private Integer idx;
     private String name;
     private String type;
+
+    @Override
+    public int compareTo(MoodDto m){
+        if (this.idx > m.idx){
+            return 1;
+        }
+        else if (this.idx < m.idx){
+            return -1;
+        }
+        else{
+            return 0;
+        }
+    }
 
     public MoodDto(Mood entity){
         this.idx = entity.getIdx();
