@@ -11,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -47,10 +51,10 @@ public class DiaryProvider {
         this.jwtService = jwtService;
     }
 
-    public List<DiaryListDto> getDiaryList(Integer userIdx) throws BaseException {
+    public List<DiaryListDto> getDiaryList(Integer userIdx, Integer type) throws BaseException {
         try{
             User user = new User(userIdx);
-            List<DiaryList> result = diaryListRepository.findByUserOrderByNumAsc(user);
+            List<DiaryList> result = diaryListRepository.findByUserAndTypeOrderByNumAsc(user,type);
             List<DiaryListDto> list = new ArrayList<>();
             result.forEach(d -> {
                 list.add(new DiaryListDto(d));
@@ -64,9 +68,30 @@ public class DiaryProvider {
     public ResponseDiaryDto getDiary(Integer diaryIdx) throws BaseException {
         try{
             Optional<Diary> result = diaryRepository.findById(diaryIdx);
-            
+
             if (result.isPresent()){
                 return new ResponseDiaryDto(result.get());
+            }
+            else{
+                throw new BaseException(DATABASE_ERROR);
+            }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public ResponseDiaryHome getDiaryHome(Integer userIdx, Integer type, Pageable pageable) throws BaseException {
+        try{
+            User user = new User(userIdx);
+            Optional<DiaryList> result = diaryListRepository.findTopByUserAndTypeOrderByNumAsc(user,type);
+            if (result.isPresent()){
+                DiaryList list = result.get();
+                int limit = diaryRepository.countByDiaryList(list);
+                if (limit <= pageable.getPageSize() * pageable.getPageNumber()){
+                    throw new BaseException(DATABASE_ERROR);
+                }
+                List<DiarySummary> records = diaryRepository.findByDiaryList(list,pageable);
+                return new ResponseDiaryHome(list.getContext(),records);
             }
             else{
                 throw new BaseException(DATABASE_ERROR);

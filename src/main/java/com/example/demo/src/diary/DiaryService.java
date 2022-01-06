@@ -48,10 +48,10 @@ public class DiaryService {
         this.jwtService = jwtService;
     }
 
-    public void insertDiaryList(DiaryListDto diaryListDto, Integer userIdx) throws BaseException {
+    public void insertDiaryList(DiaryListDto diaryListDto, Integer userIdx, Integer type) throws BaseException {
         try{
             User user = new User(userIdx);
-            List<DiaryList> result = diaryListRepository.findByUserOrderByNumAsc(user);
+            List<DiaryList> result = diaryListRepository.findByUserAndTypeOrderByNumAsc(user, type);
             for (DiaryList d : result){
                 if (d.getContext().equals(diaryListDto.getContext())){
                     throw new BaseException(FAIL_LISTS_ADD);
@@ -68,10 +68,10 @@ public class DiaryService {
         }
     }
 
-    public void updateDiaryList(List<String> diaryListDto, Integer userIdx) throws BaseException {
+    public void updateDiaryList(List<String> diaryListDto, Integer userIdx, Integer type) throws BaseException {
         try{
             User user = new User(userIdx);
-            List<DiaryList> result = diaryListRepository.findByUserOrderByNumAsc(user);
+            List<DiaryList> result = diaryListRepository.findByUserAndTypeOrderByNumAsc(user, type);
 
             if (result.size() != diaryListDto.size()){
                 throw new BaseException(FAIL_LISTS_ADD);

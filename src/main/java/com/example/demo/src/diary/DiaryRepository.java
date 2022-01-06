@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 import java.util.List;
 import java.util.HashSet;
@@ -19,6 +21,12 @@ public interface DiaryRepository extends JpaRepository<Diary, Integer> {
     @Query(value = "SELECT DISTINCT d from mood as m INNER JOIN m.diary d WHERE m.name = :name AND d.user = :user")
     List<Diary> findByNameAndUser(@Param(value = "name") String name, @Param(value = "user") User user);
 
-    @Query(value = "DELETE FROM diary d where d.diaryList = :diaryList")
+    @Query(value = "DELETE FROM diary d WHERE d.diaryList = :diaryList")
     void deleteByDiaryList(@Param(value = "diaryList") DiaryList diaryList);
+
+    int countByDiaryList(DiaryList diaryList);
+
+    @Query(value = "SELECT new com.example.demo.src.model.DiarySummary(d.title, d.context, d.date, i.imgurl)" +
+            " FROM diaryimg i INNER JOIN i.diary d WHERE d.diaryList = :diaryList GROUP BY d.idx ORDER BY d.date DESC")
+    List<DiarySummary> findByDiaryList(@Param(value = "diaryList") DiaryList diaryList, Pageable pageable);
 }

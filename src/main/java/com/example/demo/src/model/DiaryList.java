@@ -34,7 +34,7 @@ public class DiaryList {
     private Integer num;
 
     @Column(nullable = false)
-    private String type;
+    private Integer type;
     
     @Builder
     public DiaryList(User user, DiaryListDto diaryListDto, Integer num) {
