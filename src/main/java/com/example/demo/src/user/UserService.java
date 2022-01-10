@@ -46,6 +46,10 @@ public class UserService {
     }
 
     public ResponseUser createUser(SaveUserDto user) throws BaseException {
+        Optional<User> chk = userRepository.selectById(user.getId());
+        if (chk.isPresent()){
+            throw new BaseException(ALREADY_USER_EXIST);
+        }
         try{
             String pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(user.getPassword());
             user.setPassword(pwd);
@@ -60,6 +64,9 @@ public class UserService {
             result.setJwt(jwt);
             return result;
         } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -74,6 +81,9 @@ public class UserService {
             }
 
         } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -102,6 +112,9 @@ public class UserService {
             }
             return false;
         } catch(Exception exception){
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -134,6 +147,9 @@ public class UserService {
                 throw new BaseException(DATABASE_ERROR);
             }
         } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -160,6 +176,9 @@ public class UserService {
             }
             throw new BaseException(DATABASE_ERROR);
         } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -178,6 +197,9 @@ public class UserService {
                 throw new BaseException(NONE_PET_EXIST);
             }
         } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
             throw new BaseException(DATABASE_ERROR);
         }
     }

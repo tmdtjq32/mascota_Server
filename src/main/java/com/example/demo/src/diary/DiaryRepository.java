@@ -15,7 +15,7 @@ import java.util.Set;
 
 public interface DiaryRepository extends JpaRepository<Diary, Integer> {
 
-    @EntityGraph(attributePaths = {"moods","imgurls"})
+    @EntityGraph(attributePaths = {"moods","imgurls"},type = EntityGraphType.LOAD)
     Optional<Diary> findById(Integer idx);
 
     @Query(value = "SELECT DISTINCT d from mood as m INNER JOIN m.diary d WHERE m.name = :name AND d.user = :user")
@@ -26,7 +26,10 @@ public interface DiaryRepository extends JpaRepository<Diary, Integer> {
 
     int countByDiaryList(DiaryList diaryList);
 
-    @Query(value = "SELECT new com.example.demo.src.model.DiarySummary(d.title, d.context, d.date, i.imgurl)" +
+    @Query(value = "SELECT new com.example.demo.src.model.DiarySummary(d.idx,d.title, d.context, d.date, i.imgurl)" +
             " FROM diaryimg i INNER JOIN i.diary d WHERE d.diaryList = :diaryList GROUP BY d.idx ORDER BY d.date DESC")
     List<DiarySummary> findByDiaryList(@Param(value = "diaryList") DiaryList diaryList, Pageable pageable);
+
+    @Query("SELECT d FROM diary as d WHERE d.idx = :idx")
+    Optional<Diary> selectById(@Param("idx") Integer idx);
 }

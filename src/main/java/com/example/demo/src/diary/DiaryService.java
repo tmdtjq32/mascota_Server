@@ -61,7 +61,7 @@ public class DiaryService {
             if (result.size() != 0){
                 number = result.get(result.size()-1).getNum() + 1;
             }
-            DiaryList insert = new DiaryList(user, diaryListDto, number);
+            DiaryList insert = new DiaryList(user, diaryListDto, number, type);
             diaryListRepository.save(insert);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -92,7 +92,7 @@ public class DiaryService {
         try{
             Optional<DiaryList> result = diaryListRepository.findById(listIdx);
             if (result.isPresent()) {
-                diaryRepository.deleteByDiaryList(result.get());
+//                diaryRepository.deleteByDiaryList(result.get());
                 diaryListRepository.deleteById(listIdx);
             }
             else {
@@ -125,6 +125,25 @@ public class DiaryService {
                 moods.add(new Mood(insert, d));
             }
             moodRepository.saveAll(moods);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void deleteDiary(Integer diaryIdx, Integer userIdx) throws BaseException {
+        try{
+            Optional<Diary> chk = diaryRepository.selectById(diaryIdx);
+            if (chk.isPresent()){
+                Diary result = chk.get();
+                User s = result.getUser();
+                if (s.getIdx() != userIdx){
+                    throw new BaseException(NONE_DIARY_WRITE);
+                }
+                diaryRepository.deleteById(diaryIdx);
+            }
+            else{
+                throw new BaseException(NONE_DIARY_EXIST);
+            }
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

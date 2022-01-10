@@ -65,10 +65,6 @@ public class DiaryController {
                 return new BaseResponse<>(ADD_LISTS_TEXT_EMPTY);
             }
 
-            if (diaryListDto.getType() == null){
-                return new BaseResponse<>(NONE_TYPE_EXIST);
-            }
-
             if (type != 1 && type != 2){
                 return new BaseResponse<>(NONE_TYPED);
             }
@@ -141,6 +137,18 @@ public class DiaryController {
     }
 
     @ResponseBody
+    @DeleteMapping("/{diaryIdx}")
+    public BaseResponse<String> deleteDiary(@PathVariable("diaryIdx") Integer diaryIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            diaryService.deleteDiary(diaryIdx, userIdxByJwt);
+            return new BaseResponse<>("");
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
     @GetMapping("/{diaryIdx}")
     public BaseResponse<ResponseDiaryDto> getDiary(@PathVariable("diaryIdx") Integer diaryIdx) {
         try{
@@ -154,15 +162,14 @@ public class DiaryController {
 
     @ResponseBody
     @GetMapping("/home/{type}")
-    public BaseResponse<ResponseDiaryHome> getDiaryHome(@PathVariable("type") Integer type,@PageableDefault(size = 10) Pageable pageable) {
+    public BaseResponse<ResponseDiaryHome> getDiaryHome(@PathVariable("type") Integer type, @PageableDefault(size = 10) Pageable pageable) {
         try{
             int userIdxByJwt = jwtService.getUserIdx();
-
             if (type != 1 && type != 2){
                 return new BaseResponse<>(NONE_TYPED);
             }
 
-            ResponseDiaryHome result = diaryProvider.getDiaryHome(userIdxByJwt,type, pageable);
+            ResponseDiaryHome result = diaryProvider.getDiaryHome(userIdxByJwt,type,pageable);
 
             return new BaseResponse<>(result);
         } catch(BaseException exception){

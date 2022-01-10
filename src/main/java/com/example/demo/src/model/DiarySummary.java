@@ -18,6 +18,7 @@ import java.util.Collections;
 @Getter
 @Setter
 public class DiarySummary {
+    private Integer idx;
     private String title;
     private String context;
     private Date date;
@@ -25,7 +26,8 @@ public class DiarySummary {
     private String day;
     private String dayofweek;
 
-    public DiarySummary(String title, String context, Date date, String imgurl){
+    public DiarySummary(Integer idx, String title, String context, Date date, String imgurl){
+        this.idx = idx;
         this.title = title;
         this.context = context;
         this.date = date;
@@ -41,9 +43,4 @@ public class DiarySummary {
         else if (val == 6) { day = "토"; }
         else if (val == 7) { day = "일"; }
     }
-
-    public void setDayofweek(String dayofweek){
-        this.dayofweek = dayofweek;
-    }
-
 }

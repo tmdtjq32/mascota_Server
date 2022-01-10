@@ -15,7 +15,6 @@ import java.util.HashSet;
 public class DiaryListDto {
     private Integer idx;
     private String context;
-    private Integer type;
 
     public DiaryListDto(DiaryList entity){
         this.idx = entity.getIdx();

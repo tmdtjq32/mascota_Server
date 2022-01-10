@@ -61,6 +61,9 @@ public class DiaryProvider {
             });
             return list;
         } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -76,6 +79,9 @@ public class DiaryProvider {
                 throw new BaseException(DATABASE_ERROR);
             }
         } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -88,7 +94,7 @@ public class DiaryProvider {
                 DiaryList list = result.get();
                 int limit = diaryRepository.countByDiaryList(list);
                 if (limit <= pageable.getPageSize() * pageable.getPageNumber()){
-                    throw new BaseException(DATABASE_ERROR);
+                    throw new BaseException(NONE_PAGE);
                 }
                 List<DiarySummary> records = diaryRepository.findByDiaryList(list,pageable);
                 return new ResponseDiaryHome(list.getContext(),records);
@@ -97,6 +103,9 @@ public class DiaryProvider {
                 throw new BaseException(DATABASE_ERROR);
             }
         } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
             throw new BaseException(DATABASE_ERROR);
         }
     }

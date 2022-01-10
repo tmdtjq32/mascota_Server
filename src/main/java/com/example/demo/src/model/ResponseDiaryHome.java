@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.lang.String;
@@ -24,7 +24,7 @@ import java.lang.String;
 public class ResponseDiaryHome {
     private String listtitle;
 
-    HashMap<String,ArrayList<DiarySummary>> records = new HashMap<String,ArrayList<DiarySummary>>();
+    TreeMap<String,ArrayList<DiarySummary>> records = new TreeMap<String,ArrayList<DiarySummary>>(Collections.reverseOrder());
 
     @Builder
     public ResponseDiaryHome(String listtitle, List<DiarySummary> summarys){
@@ -38,7 +38,7 @@ public class ResponseDiaryHome {
             ArrayList<DiarySummary> now = new ArrayList<>();
             if (this.records.containsKey(key)){
                 now = records.get(key);
-                now.add(d);
+                records.get(key).add(d);
             }
             else{
                 now.add(d);

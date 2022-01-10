@@ -37,10 +37,10 @@ public class DiaryList {
     private Integer type;
     
     @Builder
-    public DiaryList(User user, DiaryListDto diaryListDto, Integer num) {
+    public DiaryList(User user, DiaryListDto diaryListDto, Integer num, Integer type) {
         this.user = user;
         this.context = diaryListDto.getContext();
         this.num = num;
-        this.type = diaryListDto.getType();
+        this.type = type;
     }
 }
