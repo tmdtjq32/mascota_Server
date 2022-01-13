@@ -26,10 +26,18 @@ public interface DiaryRepository extends JpaRepository<Diary, Integer> {
 
     int countByDiaryList(DiaryList diaryList);
 
+    int countByUser(User user);
+
     @Query(value = "SELECT new com.example.demo.src.model.DiarySummary(d.idx,d.title, d.context, d.date, i.imgurl)" +
             " FROM diaryimg i INNER JOIN i.diary d WHERE d.diaryList = :diaryList GROUP BY d.idx ORDER BY d.date DESC")
     List<DiarySummary> findByDiaryList(@Param(value = "diaryList") DiaryList diaryList, Pageable pageable);
 
+    @Query(value = "SELECT new com.example.demo.src.model.DiarySummary(d.idx,d.title, d.context, d.date, i.imgurl)" +
+            " FROM diaryimg i INNER JOIN i.diary d WHERE d.user = :user GROUP BY d.idx")
+    List<DiarySummary> findByUser(@Param(value = "user") User user, Pageable pageable);
+
     @Query("SELECT d FROM diary as d WHERE d.idx = :idx")
     Optional<Diary> selectById(@Param("idx") Integer idx);
+
+
 }

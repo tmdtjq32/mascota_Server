@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Optional;
+import java.util.Random;
 import static com.example.demo.config.BaseResponseStatus.*;
 
 
@@ -43,6 +44,9 @@ public class DiaryProvider {
 
     @Autowired
     MoodRepository moodRepository;
+
+    @Autowired
+    HelpRepository helpRepository;
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -86,10 +90,16 @@ public class DiaryProvider {
         }
     }
 
-    public ResponseDiaryHome getDiaryHome(Integer userIdx, Integer type, Pageable pageable) throws BaseException {
+    public ResponseDiaryHome getDiaryHome(Integer userIdx, Integer type, Integer listIdx, Pageable pageable) throws BaseException {
         try{
             User user = new User(userIdx);
-            Optional<DiaryList> result = diaryListRepository.findTopByUserAndTypeOrderByNumAsc(user,type);
+            Optional<DiaryList> result;
+            if (listIdx != null){
+                result = diaryListRepository.findById(listIdx);
+            }
+            else{
+                result = diaryListRepository.findTopByUserAndTypeOrderByNumAsc(user,type);
+            }
             if (result.isPresent()){
                 DiaryList list = result.get();
                 int limit = diaryRepository.countByDiaryList(list);
@@ -100,8 +110,28 @@ public class DiaryProvider {
                 return new ResponseDiaryHome(list.getContext(),records);
             }
             else{
-                throw new BaseException(DATABASE_ERROR);
+                throw new BaseException(NONE_PAGE);
             }
+        } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public HelpHome getDiaryHelp(Integer userIdx) throws BaseException {
+        try{
+            User user = new User(userIdx);
+            int limit = diaryRepository.countByUser(user);
+            Random num = new Random();
+            int idx = num.nextInt(limit);
+            PageRequest pageRequest = PageRequest.of(idx, 1);
+            List<DiarySummary> result = diaryRepository.findByUser(user,pageRequest);
+            PageRequest request = PageRequest.of(0, 5);
+            Page<Help> helpList = helpRepository.findAll(request);
+
+            return new HelpHome(result.get(0),helpList.getContent());
         } catch (Exception exception) {
             if (exception instanceof BaseException){
                 throw (BaseException)exception;

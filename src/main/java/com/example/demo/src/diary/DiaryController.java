@@ -162,14 +162,28 @@ public class DiaryController {
 
     @ResponseBody
     @GetMapping("/home/{type}")
-    public BaseResponse<ResponseDiaryHome> getDiaryHome(@PathVariable("type") Integer type, @PageableDefault(size = 10) Pageable pageable) {
+    public BaseResponse<ResponseDiaryHome> getDiaryHome(@PathVariable("type") Integer type, @RequestParam(required = false) Integer listIdx, @PageableDefault(size = 10) Pageable pageable) {
         try{
             int userIdxByJwt = jwtService.getUserIdx();
             if (type != 1 && type != 2){
                 return new BaseResponse<>(NONE_TYPED);
             }
 
-            ResponseDiaryHome result = diaryProvider.getDiaryHome(userIdxByJwt,type,pageable);
+            ResponseDiaryHome result = diaryProvider.getDiaryHome(userIdxByJwt,type,listIdx, pageable);
+
+            return new BaseResponse<>(result);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/help")
+    public BaseResponse<HelpHome> getDiaryHelp() {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            HelpHome result = diaryProvider.getDiaryHelp(userIdxByJwt);
 
             return new BaseResponse<>(result);
         } catch(BaseException exception){
