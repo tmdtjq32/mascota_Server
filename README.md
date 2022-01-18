@@ -1,7 +1,7 @@
 ## ✨Structure
 
 ```text
-api-server-spring-boot
+mascota-server
   > * build
   > gradle
   > * logs
@@ -23,15 +23,39 @@ api-server-spring-boot
       > models
           | Pet.java        
           | User.java 
+          | Diary.java
+          | DiaryImg.java
+          | DiaryList.java
+          | Help.java
+          | HelpHome.java
+          | Mood.java
+          | DiaryDto.java
+          | DiaryImgDto.java
+          | DiaryListDto.java
+          | HelpDto.java
+          | MoodDto.java
+          | DiaryDto.java
           | UserDto.java 
           | PetDto.java 
           | SaveUserDto.java 
           | SaveBookDto.java 
-      > user
+          | DiarySummary.java
+          | UpdateDiaryListsDto.java
+          | ResponseDiaryDto.java
+          | ResponseDiaryHome.java
+          | ResponseHome.java
+      > repository
         | UserController.java
         | UserProvider.java
         | UserService.java
+      > user
         | UserRepository.java
+        | PetRepository.java
+        | MoodRepository.java
+        | HelpRepository.java
+        | DiaryRepository.java
+        | DiaryImgRepository.java
+        | DiaryListRepository.java
       > diary
       | WebSecurityConfig.java // spring-boot-starter-security, jwt 를 사용하기 위한 클래스 
     > utils
@@ -53,7 +77,7 @@ Java 라이브러리로 반복되는 getter, setter, toString 등의 메서드 �
 
 
 ### src - main - resources
-템플릿은 크게 log 폴더와 src 폴더로 나뉜다. log는 통신 시에 발생하는 오류들을 기록하는 곳이다. 
+크게 log 폴더와 src 폴더로 나뉜다. log는 통신 시에 발생하는 오류들을 기록하는 곳이다. 
 
 `application.yml`
 

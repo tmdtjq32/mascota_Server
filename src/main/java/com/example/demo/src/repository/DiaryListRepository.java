@@ -1,4 +1,4 @@
-package com.example.demo.src.diary;
+package com.example.demo.src.repository;
 
 import com.example.demo.src.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
-public interface DiaryImgRepository extends JpaRepository<DiaryImg, Integer> {
+public interface DiaryListRepository extends JpaRepository<DiaryList, Integer> {
+    List<DiaryList> findByUserAndTypeOrderByNumAsc(User user, Integer type);
 
-    
+    Optional<DiaryList> findTopByUserAndTypeOrderByNumAsc(User user, Integer type);
+
 }

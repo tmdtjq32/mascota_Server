@@ -3,6 +3,7 @@ package com.example.demo.src.diary;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.model.*;
+import com.example.demo.src.repository.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;

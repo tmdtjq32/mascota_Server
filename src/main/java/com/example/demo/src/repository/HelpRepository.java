@@ -1,4 +1,4 @@
-package com.example.demo.src.diary;
+package com.example.demo.src.repository;
 
 import com.example.demo.src.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
