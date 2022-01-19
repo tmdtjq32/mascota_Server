@@ -4,6 +4,7 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.model.*;
 import com.example.demo.src.repository.*;
+import com.example.demo.src.specification.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
+import org.springframework.data.jpa.domain.Specification;
 
 import javax.sql.DataSource;
 
@@ -192,6 +194,7 @@ public class UserService {
             if (result.isPresent()) {
                 Pet now = result.get();
                 User user = new User(userIdx);
+                String petName = now.getName();
                 List<Diary> byPet = diaryRepository.findByNameAndUser(now.getName(),user);
                 diaryRepository.deleteAll(byPet);
                 petRepository.deleteById(petIdx);

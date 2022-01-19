@@ -37,18 +37,7 @@ mascota-server
           | DiaryDto.java
           | UserDto.java 
           | PetDto.java 
-          | SaveUserDto.java 
-          | SaveBookDto.java 
-          | DiarySummary.java
-          | UpdateDiaryListsDto.java
-          | ResponseDiaryDto.java
-          | ResponseDiaryHome.java
-          | ResponseHome.java
       > repository
-        | UserController.java
-        | UserProvider.java
-        | UserService.java
-      > user
         | UserRepository.java
         | PetRepository.java
         | MoodRepository.java
@@ -56,6 +45,10 @@ mascota-server
         | DiaryRepository.java
         | DiaryImgRepository.java
         | DiaryListRepository.java
+      > user
+        | UserController.java
+        | UserProvider.java
+        | UserService.java
       > diary
       | WebSecurityConfig.java // spring-boot-starter-security, jwt 를 사용하기 위한 클래스 
     > utils

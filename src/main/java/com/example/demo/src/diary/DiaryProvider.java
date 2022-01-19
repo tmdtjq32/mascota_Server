@@ -3,6 +3,7 @@ package com.example.demo.src.diary;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.model.*;
+import com.example.demo.src.specification.*;
 import com.example.demo.src.repository.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.ArrayList;
