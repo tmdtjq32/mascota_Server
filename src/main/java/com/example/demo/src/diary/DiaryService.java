@@ -151,6 +151,9 @@ public class DiaryService {
                 throw new BaseException(NONE_DIARY_EXIST);
             }
         } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
             throw new BaseException(DATABASE_ERROR);
         }
     }

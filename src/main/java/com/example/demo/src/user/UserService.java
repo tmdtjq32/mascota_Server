@@ -194,6 +194,7 @@ public class UserService {
             if (result.isPresent()) {
                 Pet now = result.get();
                 User user = new User(userIdx);
+                System.out.println(userIdx);
                 String petName = now.getName();
                 List<Diary> byPet = diaryRepository.findByNameAndUser(now.getName(),user);
                 diaryRepository.deleteAll(byPet);

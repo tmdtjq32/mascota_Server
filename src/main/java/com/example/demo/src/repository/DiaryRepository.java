@@ -25,8 +25,6 @@ public interface DiaryRepository extends JpaRepository<Diary, Integer>, JpaSpeci
     @Query(value = "DELETE FROM diary d WHERE d.diaryList = :diaryList")
     void deleteByDiaryList(@Param(value = "diaryList") DiaryList diaryList);
 
-    int countByDiaryList(DiaryList diaryList);
-
     int countByUser(User user);
 
     @Query(value = "SELECT new com.example.demo.src.model.DiarySummary(d.idx,d.title, d.context, d.date, i.imgurl)" +
@@ -36,5 +34,9 @@ public interface DiaryRepository extends JpaRepository<Diary, Integer>, JpaSpeci
     @Query(value = "SELECT new com.example.demo.src.model.DiarySummary(d.idx,d.title, d.context, d.date, i.imgurl)" +
             " FROM diaryimg i INNER JOIN i.diary d WHERE d.user = :user GROUP BY d.idx")
     List<DiarySummary> findByUser(@Param(value = "user") User user, Pageable pageable);
+
+    @Query(value = "select count(a.idx) from (select distinct diary.idx from diary join mood on mood.diary_id = diary.idx " +
+            "where diary.user_id = :userid and mood.name = :name) as a", nativeQuery = true)
+    int numOfPets(@Param(value = "userid") Integer userid, @Param(value = "name") String name);
 
 }

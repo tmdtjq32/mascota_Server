@@ -19,6 +19,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -50,6 +53,9 @@ public class DiaryProvider {
 
     @Autowired
     HelpRepository helpRepository;
+
+    @Autowired
+    PetRepository petRepository;
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -105,7 +111,8 @@ public class DiaryProvider {
             }
             if (result.isPresent()){
                 DiaryList list = result.get();
-                int limit = diaryRepository.countByDiaryList(list);
+                Specification spec = Specification.where(DiarySpecification.countByDiaryList(list));
+                long limit = diaryRepository.count(spec);
                 if (limit <= pageable.getPageSize() * pageable.getPageNumber()){
                     throw new BaseException(NONE_PAGE);
                 }
@@ -135,6 +142,33 @@ public class DiaryProvider {
             Page<Help> helpList = helpRepository.findAll(request);
 
             return new HelpHome(result.get(0),helpList.getContent());
+        } catch (Exception exception) {
+            if (exception instanceof BaseException){
+                throw (BaseException)exception;
+            }
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public Miss getMiss(Integer userIdx, String name) throws BaseException {
+        try{
+            User user = new User(userIdx);
+            long dayofpets = 0;
+            Optional<Pet> chk = petRepository.findByUserAndName(user,name);
+            if (chk.isPresent()){
+                Pet pet = chk.get();
+                SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+                Date birth = pet.getBirth();
+                Date now = new Date();
+                long calDate = now.getTime() - birth.getTime();
+                dayofpets = calDate / (24*60*60*1000);
+            }
+            else{
+                throw new BaseException(NONE_PETS_EXIST);
+            }
+            long diaryNum = diaryRepository.numOfPets(userIdx,name);
+
+            return new Miss(diaryNum,dayofpets);
         } catch (Exception exception) {
             if (exception instanceof BaseException){
                 throw (BaseException)exception;

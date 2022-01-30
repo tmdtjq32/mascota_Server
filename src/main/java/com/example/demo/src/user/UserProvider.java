@@ -95,7 +95,7 @@ public class UserProvider {
         try{
             List<PetDto> result = new ArrayList<>();
             User user = new User(userIdx);
-            List<Pet> cur = petRepository.findByUser(user);
+            List<Pet> cur = petRepository.findByUserAndStatus(user,"N");
             cur.forEach(p -> {
                 result.add(new PetDto(p));
             });

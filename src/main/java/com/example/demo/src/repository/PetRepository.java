@@ -12,5 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public interface PetRepository extends JpaRepository<Pet, Integer> {
-    List<Pet> findByUser(User user);
+    List<Pet> findByUserAndStatus(User user, String status);
+
+    Optional<Pet> findByUserAndName(User user, String name);
 }

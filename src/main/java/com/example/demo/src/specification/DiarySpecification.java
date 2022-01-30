@@ -19,12 +19,34 @@ public class DiarySpecification {
             public Predicate toPredicate(Root<Diary> root,
                                          CriteriaQuery<?> query,
                                          CriteriaBuilder builder){
-                Join<Diary,User> m = root.join("user",JoinType.INNER);
                 return builder.equal(root.get("idx"),idx);
             }
         };
     }
 
+    public static Specification<Diary> countByDiaryList(DiaryList diaryList) {
+        return new Specification<Diary>() {
+            @Override
+            public Predicate toPredicate(Root<Diary> root,
+                                         CriteriaQuery<?> query,
+                                         CriteriaBuilder builder){
 
+                return builder.equal(root.get("diaryList"),diaryList);
+            }
+        };
+    }
+
+    public static Specification<Diary> countByUser(User user) {
+        return new Specification<Diary>() {
+            @Override
+            public Predicate toPredicate(Root<Diary> root,
+                                         CriteriaQuery<?> query,
+                                         CriteriaBuilder builder){
+
+                return builder.equal(root.get("user"),user);
+            }
+        };
+    }
+    
 
 }
