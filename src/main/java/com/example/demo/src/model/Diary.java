@@ -42,30 +42,30 @@ public class Diary {
     @Temporal(TemporalType.DATE)
     private Date date;
 
-    @OneToMany(mappedBy="diary", fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "diary", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     Set<DiaryImg> imgurls = new HashSet<>();
 
-    @OneToMany(mappedBy="diary", fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "diary", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     Set<Mood> moods = new HashSet<>();
 
-    public void setByDiaryDto(DiaryDto diaryDto){
-        if (diaryDto.getTitle() != null){
+    public void setByDiaryDto(DiaryDto diaryDto) {
+        if (diaryDto.getTitle() != null) {
             this.title = diaryDto.getTitle();
         }
-        if (diaryDto.getContext() != null){
+        if (diaryDto.getContext() != null) {
             this.context = diaryDto.getContext();
         }
-        if (diaryDto.getDate() != null){
+        if (diaryDto.getDate() != null) {
             this.date = diaryDto.getDate();
         }
     }
 
-    public void addImgs(DiaryImg img){
+    public void addImgs(DiaryImg img) {
         this.imgurls.add(img);
         img.setDiary(this);
     }
 
-    public void addMoods(Mood mood){
+    public void addMoods(Mood mood) {
         this.moods.add(mood);
         mood.setDiary(this);
     }
@@ -78,5 +78,4 @@ public class Diary {
         this.context = diaryDto.getContext();
         this.date = diaryDto.getDate();
     }
-
 }

@@ -26,21 +26,36 @@ public class DiarySummary {
     private String day;
     private String dayofweek;
 
-    public DiarySummary(Integer idx, String title, String context, Date date, String imgurl){
+    public DiarySummary(Integer idx, String title, String context, Date date, String imgurl) {
         this.idx = idx;
         this.title = title;
         this.context = context;
         this.date = date;
         this.imgurl = imgurl;
-        Calendar calendar =  Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int val = calendar.get(Calendar.DAY_OF_WEEK);
-        if (val == 1){ day = "월"; }
-        else if (val == 2) { day = "화"; }
-        else if (val == 3) { day = "수"; }
-        else if (val == 4) { day = "목"; }
-        else if (val == 5) { day = "금"; }
-        else if (val == 6) { day = "토"; }
-        else if (val == 7) { day = "일"; }
+        if (val == 1) {
+            day = "월";
+        } else if (val == 2) {
+            day = "화";
+        } else if (val == 3) {
+            day = "수";
+        } else if (val == 4) {
+            day = "목";
+        } else if (val == 5) {
+            day = "금";
+        } else if (val == 6) {
+            day = "토";
+        } else if (val == 7) {
+            day = "일";
+        }
+    }
+
+    public DiarySummary(Diary entity) {
+        this.idx = entity.getIdx();
+        this.title = entity.getTitle();
+        this.context = entity.getContext();
+        this.date = entity.getDate();
     }
 }

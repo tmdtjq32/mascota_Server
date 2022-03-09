@@ -20,17 +20,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import static com.example.demo.config.BaseResponseStatus.*;
-
 
 //Provider : Read의 비즈니스 로직 처리
 @Service
@@ -65,114 +57,135 @@ public class DiaryProvider {
     }
 
     public List<DiaryListDto> getDiaryList(Integer userIdx, Integer type) throws BaseException {
-        try{
+        try {
             User user = new User(userIdx);
-            List<DiaryList> result = diaryListRepository.findByUserAndTypeOrderByNumAsc(user,type);
+            List<DiaryList> result = diaryListRepository.findByUserAndTypeOrderByNumAsc(user, type);
             List<DiaryListDto> list = new ArrayList<>();
             result.forEach(d -> {
                 list.add(new DiaryListDto(d));
             });
             return list;
         } catch (Exception exception) {
-            if (exception instanceof BaseException){
-                throw (BaseException)exception;
+            if (exception instanceof BaseException) {
+                throw (BaseException) exception;
             }
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
     public ResponseDiaryDto getDiary(Integer diaryIdx) throws BaseException {
-        try{
+        try {
             Optional<Diary> result = diaryRepository.findById(diaryIdx);
 
-            if (result.isPresent()){
+            if (result.isPresent()) {
                 return new ResponseDiaryDto(result.get());
-            }
-            else{
+            } else {
                 throw new BaseException(DATABASE_ERROR);
             }
         } catch (Exception exception) {
-            if (exception instanceof BaseException){
-                throw (BaseException)exception;
+            if (exception instanceof BaseException) {
+                throw (BaseException) exception;
             }
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
-    public ResponseDiaryHome getDiaryHome(Integer userIdx, Integer type, Integer listIdx, Pageable pageable) throws BaseException {
-        try{
+    public ResponseDiaryHome getDiaryHome(Integer userIdx, Integer type, Integer listIdx, Pageable pageable)
+            throws BaseException {
+        try {
             User user = new User(userIdx);
             Optional<DiaryList> result;
-            if (listIdx != null){
+            if (listIdx != null) {
                 result = diaryListRepository.findById(listIdx);
+            } else {
+                result = diaryListRepository.findTopByUserAndTypeOrderByNumAsc(user, type);
             }
-            else{
-                result = diaryListRepository.findTopByUserAndTypeOrderByNumAsc(user,type);
-            }
-            if (result.isPresent()){
+            if (result.isPresent()) {
                 DiaryList list = result.get();
                 Specification spec = Specification.where(DiarySpecification.countByDiaryList(list));
                 long limit = diaryRepository.count(spec);
-                if (limit <= pageable.getPageSize() * pageable.getPageNumber()){
+                if (limit <= pageable.getPageSize() * pageable.getPageNumber()) {
                     throw new BaseException(NONE_PAGE);
                 }
-                List<DiarySummary> records = diaryRepository.findByDiaryList(list,pageable);
-                return new ResponseDiaryHome(list.getContext(),records);
-            }
-            else{
+                List<DiarySummary> records = diaryRepository.findByDiaryList(list, pageable);
+                return new ResponseDiaryHome(list.getContext(), records);
+            } else {
                 throw new BaseException(NONE_PAGE);
             }
         } catch (Exception exception) {
-            if (exception instanceof BaseException){
-                throw (BaseException)exception;
+            if (exception instanceof BaseException) {
+                throw (BaseException) exception;
             }
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
     public HelpHome getDiaryHelp(Integer userIdx) throws BaseException {
-        try{
+        try {
             User user = new User(userIdx);
             int limit = diaryRepository.countByUser(user);
             Random num = new Random();
             int idx = num.nextInt(limit);
             PageRequest pageRequest = PageRequest.of(idx, 1);
-            List<DiarySummary> result = diaryRepository.findByUser(user,pageRequest);
+            List<DiarySummary> result = diaryRepository.findByUser(user, pageRequest);
             PageRequest request = PageRequest.of(0, 5);
             Page<Help> helpList = helpRepository.findAll(request);
 
-            return new HelpHome(result.get(0),helpList.getContent());
+            return new HelpHome(result.get(0), helpList.getContent());
         } catch (Exception exception) {
-            if (exception instanceof BaseException){
-                throw (BaseException)exception;
+            if (exception instanceof BaseException) {
+                throw (BaseException) exception;
             }
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
     public Miss getMiss(Integer userIdx, String name) throws BaseException {
-        try{
+        try {
             User user = new User(userIdx);
             long dayofpets = 0;
-            Optional<Pet> chk = petRepository.findByUserAndName(user,name);
-            if (chk.isPresent()){
+            Optional<Pet> chk = petRepository.findByUserAndName(user, name);
+            if (chk.isPresent()) {
                 Pet pet = chk.get();
                 SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
                 Date birth = pet.getBirth();
                 Date now = new Date();
                 long calDate = now.getTime() - birth.getTime();
-                dayofpets = calDate / (24*60*60*1000);
-            }
-            else{
+                dayofpets = calDate / (24 * 60 * 60 * 1000);
+            } else {
                 throw new BaseException(NONE_PETS_EXIST);
             }
-            long diaryNum = diaryRepository.numOfPets(userIdx,name);
+            long diaryNum = diaryRepository.numOfPets(userIdx, name);
 
-            return new Miss(diaryNum,dayofpets);
+            return new Miss(diaryNum, dayofpets);
         } catch (Exception exception) {
-            if (exception instanceof BaseException){
-                throw (BaseException)exception;
+            if (exception instanceof BaseException) {
+                throw (BaseException) exception;
             }
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public HashMap<String, List<DiarySummary>> getDiaryMiss(Integer userIdx) throws BaseException {
+        try {
+            HashMap<String, List<DiarySummary>> result = new HashMap<>();
+            String[] emotion = { "사랑", "기쁨", "보통", "우울", "화남", "심심" };
+            int i = 0;
+            while (i < 6) {
+                List<Diary> rs = diaryRepository.findByTypeAndUser(emotion[i], userIdx);
+                ArrayList<DiarySummary> diarys = new ArrayList<>();
+                result.put(emotion[i], diarys);
+                for (Diary d : rs) {
+                    result.get(emotion[i]).add(new DiarySummary(d));
+                }
+                i++;
+            }
+            return result;
+        } catch (Exception exception) {
+            if (exception instanceof BaseException) {
+                throw (BaseException) exception;
+            }
+            exception.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
